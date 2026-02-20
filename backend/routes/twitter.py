@@ -15,7 +15,7 @@ from config import TWITTER_API_KEY, TWITTER_API_SECRET
 router = APIRouter(prefix="/twitter", tags=["Twitter"])
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-TWITTER_CALLBACK_URL = os.getenv("TWITTER_CALLBACK_URL", "http://localhost:8000/twitter/callback")
+TWITTER_CALLBACK_URL = os.getenv("TWITTER_CALLBACK_URL", "")
 
 # Temporary storage for OAuth request tokens (in production, use Redis/session)
 _oauth_tokens = {}
