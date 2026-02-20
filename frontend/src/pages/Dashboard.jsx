@@ -1,6 +1,25 @@
 import axios from "axios";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    Linkedin,
+    Twitter,
+    LogOut,
+    Sparkles,
+    Image as ImageIcon,
+    FileText,
+    Trash2,
+    Copy,
+    Send,
+    RefreshCw,
+    CheckCircle2,
+    XCircle,
+    Info,
+    ChevronRight,
+    Plus,
+    Upload
+} from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "https://social-media-autoposting.onrender.com";
 
@@ -165,6 +184,31 @@ function Dashboard() {
 
     const copyToClipboard = () => { navigator.clipboard.writeText(generatedText); showStatus("📋 Copied!", "info"); };
 
+    const BackgroundParticles = () => {
+        const particles = useMemo(() => [...Array(20)].map((_, i) => ({
+            id: i,
+            size: Math.random() * 4 + 2,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            duration: Math.random() * 20 + 10,
+            delay: Math.random() * 5,
+        })), []);
+
+        return (
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+                {particles.map(p => (
+                    <motion.div
+                        key={p.id}
+                        initial={{ opacity: 0, y: 0 }}
+                        animate={{ opacity: [0, 0.2, 0], y: [-20, -100] }}
+                        transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "linear" }}
+                        style={{ position: 'absolute', left: p.left, top: p.top, width: p.size, height: p.size, borderRadius: '50%', background: 'white', filter: 'blur(1px)' }}
+                    />
+                ))}
+            </div>
+        );
+    };
+
     // Icons
     const LinkedInIcon = ({ size = 24, color = "#fff" }) => (
         <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={color}>
@@ -186,25 +230,27 @@ function Dashboard() {
 
     return (
         <div style={styles.page}>
-            <div style={styles.bgShape1}></div>
-            <div style={styles.bgShape2}></div>
-            <div style={styles.bgShape3}></div>
-            <div style={styles.bgShape4}></div>
+            {/* Animated Mesh Background Blobs */}
+            <div style={styles.bgBlob1}></div>
+            <div style={styles.bgBlob2}></div>
+            <div style={styles.bgBlob3}></div>
+            <div style={styles.bgBlob4}></div>
 
             <div style={styles.container}>
                 {/* Header */}
-                <div style={styles.header} className="card-animate">
+                <div style={styles.header} className="card-3d-premium">
                     <div style={styles.headerGlow}></div>
                     <div style={styles.headerContent}>
-                        <div style={styles.headerIcon}>
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                                <rect x="2" y="2" width="24" height="24" rx="5" stroke="#fff" strokeWidth="2" />
-                                <path d="M8 14h12M14 8v12" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
+                        <div style={styles.headerIconContainer}>
+                            <img
+                                src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
+                                alt="Logo"
+                                style={styles.headerLogo}
+                            />
                         </div>
                         <div>
-                            <h1 style={styles.title}>Social Media Poster</h1>
-                            <p style={styles.subtitle}>✨ AI-powered posts for LinkedIn & Twitter/X</p>
+                            <h1 style={styles.title}>AI Social Hub</h1>
+                            <p style={styles.subtitle}>Supercharge your professional presence</p>
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 2 }}>
@@ -212,17 +258,6 @@ function Dashboard() {
                             Logout
                         </button>
                     </div>
-                    <svg width="160" height="90" viewBox="0 0 160 90" fill="none" style={styles.headerSvg}>
-                        <circle cx="25" cy="22" r="4" fill="rgba(255,255,255,0.15)" />
-                        <circle cx="70" cy="12" r="3" fill="rgba(255,255,255,0.12)" />
-                        <circle cx="120" cy="28" r="5" fill="rgba(255,255,255,0.15)" />
-                        <circle cx="45" cy="60" r="3" fill="rgba(255,255,255,0.1)" />
-                        <circle cx="100" cy="70" r="4" fill="rgba(255,255,255,0.12)" />
-                        <line x1="25" y1="22" x2="70" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                        <line x1="70" y1="12" x2="120" y2="28" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                        <line x1="45" y1="60" x2="100" y2="70" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                        <line x1="120" y1="28" x2="100" y2="70" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                    </svg>
                 </div>
 
                 {/* Status */}
@@ -254,7 +289,7 @@ function Dashboard() {
                 {/* Platform Cards */}
                 <div style={styles.platformsGrid}>
                     {/* LinkedIn */}
-                    <div style={{ ...styles.platformCard, borderColor: linkedinConnected ? "rgba(0,119,181,0.3)" : "rgba(255,255,255,0.08)" }} className="card-animate">
+                    <div style={{ ...styles.platformCard, borderColor: linkedinConnected ? "rgba(0,119,181,0.5)" : "rgba(255,255,255,0.1)" }} className="card-3d-premium">
                         <div style={styles.platformHeader}>
                             <div style={{ ...styles.platformIcon, background: "linear-gradient(135deg, #0077B5, #005f8f)" }}>
                                 <LinkedInIcon size={14} color="#fff" />
@@ -275,7 +310,7 @@ function Dashboard() {
                     </div>
 
                     {/* Twitter */}
-                    <div style={{ ...styles.platformCard, borderColor: twitterConnected ? "rgba(29,155,240,0.3)" : "rgba(255,255,255,0.08)" }} className="card-animate">
+                    <div style={{ ...styles.platformCard, borderColor: twitterConnected ? "rgba(29,155,240,0.5)" : "rgba(255,255,255,0.1)" }} className="card-3d-premium">
                         <div style={styles.platformHeader}>
                             <div style={{ ...styles.platformIcon, background: "#000" }}>
                                 <TwitterIcon size={14} color="#fff" />
@@ -297,7 +332,7 @@ function Dashboard() {
                 </div>
 
                 {/* Content Generation */}
-                <div style={styles.card} className="card-animate">
+                <div style={styles.card} className="card-3d-premium">
                     <div style={styles.cardHeader}>
                         <div style={{ ...styles.cardIconCircle, background: "linear-gradient(135deg, #f093fb, #f5576c)" }}>
                             <span style={{ fontSize: 14 }}>✨</span>
@@ -331,7 +366,7 @@ function Dashboard() {
                 </div>
 
                 {/* Image Upload/Generation */}
-                <div style={styles.card} className="card-animate">
+                <div style={styles.card} className="card-3d-premium">
                     <div style={styles.cardHeader}>
                         <div style={{ ...styles.cardIconCircle, background: "linear-gradient(135deg, #4facfe, #00f2fe)" }}>
                             <span style={{ fontSize: 14 }}>🖼️</span>
@@ -388,7 +423,7 @@ function Dashboard() {
                 </div>
 
                 {/* Post Editor */}
-                <div style={styles.card} className="card-animate">
+                <div style={styles.card} className="card-3d-premium">
                     <div style={styles.cardHeader}>
                         <div style={{ ...styles.cardIconCircle, background: "linear-gradient(135deg, #667eea, #764ba2)" }}>
                             <span style={{ fontSize: 14 }}>📝</span>
@@ -472,28 +507,41 @@ function Dashboard() {
             </div>
 
             <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
                 @keyframes spinnerAnim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                .card-animate { animation: fadeInUp 0.5s ease-out both; }
-                .card-animate:nth-child(1) { animation-delay: 0.05s; }
-                .card-animate:nth-child(2) { animation-delay: 0.1s; }
-                .card-animate:nth-child(3) { animation-delay: 0.15s; }
-                .card-animate:nth-child(4) { animation-delay: 0.20s; }
-                .card-animate:nth-child(5) { animation-delay: 0.25s; }
-                .card-animate:nth-child(6) { animation-delay: 0.30s; }
+                
+                .card-3d-premium {
+                    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    transform-style: preserve-3d;
+                    perspective: 1000px;
+                }
+                
+                .card-3d-premium:hover {
+                    transform: translateY(-8px) rotateX(4deg) rotateY(2deg);
+                    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 18px 36px -18px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+                }
+
+                .card-3d-premium:nth-child(1) { animation-delay: 0.1s; }
+                .card-3d-premium:nth-child(2) { animation-delay: 0.2s; }
+                .card-3d-premium:nth-child(3) { animation-delay: 0.3s; }
+                .card-3d-premium:nth-child(4) { animation-delay: 0.4s; }
+                .card-3d-premium:nth-child(5) { animation-delay: 0.5s; }
                 
                 @keyframes fadeInUp {
-                  from { opacity: 0; transform: translateY(20px); }
+                  from { opacity: 0; transform: translateY(30px); }
                   to { opacity: 1; transform: translateY(0); }
                 }
                 
-                @keyframes float {
-                  0%, 100% { transform: translateY(0) scale(1); }
-                  50% { transform: translateY(-20px) scale(1.05); }
+                @keyframes floatBlob {
+                  0%, 100% { transform: translate(0, 0) scale(1); }
+                  33% { transform: translate(30px, -50px) scale(1.1); }
+                  66% { transform: translate(-20px, 20px) scale(0.9); }
                 }
                 
-                @keyframes fadeIn {
-                  from { opacity: 0; }
-                  to { opacity: 1; }
+                @keyframes rotateMesh {
+                  from { transform: rotate(0deg); }
+                  to { transform: rotate(360deg); }
                 }
             `}</style>
         </div>
@@ -501,21 +549,21 @@ function Dashboard() {
 }
 
 const styles = {
-    page: { minHeight: "100vh", background: "linear-gradient(160deg, #070d1a 0%, #0d1b2a 20%, #132d46 45%, #0e3b69 70%, #0a2540 100%)", position: "relative", overflow: "hidden" },
-    bgShape1: { position: "fixed", top: -120, right: -120, width: 450, height: 450, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,119,181,0.12) 0%, transparent 70%)", pointerEvents: "none", animation: "float 8s ease-in-out infinite" },
-    bgShape2: { position: "fixed", bottom: -180, left: -120, width: 550, height: 550, borderRadius: "50%", background: "radial-gradient(circle, rgba(29,155,240,0.06) 0%, transparent 70%)", pointerEvents: "none", animation: "float 10s ease-in-out infinite 2s" },
-    bgShape3: { position: "fixed", top: "35%", left: "55%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(102,126,234,0.06) 0%, transparent 70%)", pointerEvents: "none", animation: "float 12s ease-in-out infinite 4s" },
-    bgShape4: { position: "fixed", top: "60%", right: "20%", width: 250, height: 250, borderRadius: "50%", background: "radial-gradient(circle, rgba(240,147,251,0.05) 0%, transparent 70%)", pointerEvents: "none", animation: "float 9s ease-in-out infinite 1s" },
-    container: { maxWidth: 700, margin: "0 auto", padding: "20px 20px 40px", fontFamily: "'Segoe UI', -apple-system, sans-serif", position: "relative", zIndex: 1 },
+    page: { minHeight: "100vh", background: "#0a1628", position: "relative", overflow: "hidden" },
+    bgBlob1: { position: "fixed", top: "-10%", right: "-10%", width: "600px", height: "600px", background: "radial-gradient(circle, rgba(0, 119, 181, 0.15) 0%, transparent 70%)", filter: "blur(80px)", zIndex: 0, animation: "floatBlob 15s infinite ease-in-out" },
+    bgBlob2: { position: "fixed", bottom: "-15%", left: "-5%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%)", filter: "blur(70px)", zIndex: 0, animation: "floatBlob 18s infinite ease-in-out 2s" },
+    bgBlob3: { position: "fixed", top: "30%", left: "40%", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 70%)", filter: "blur(90px)", zIndex: 0, animation: "floatBlob 20s infinite ease-in-out 4s" },
+    bgBlob4: { position: "fixed", bottom: "20%", right: "15%", width: "450px", height: "450px", background: "radial-gradient(circle, rgba(0, 160, 220, 0.1) 0%, transparent 70%)", filter: "blur(80px)", zIndex: 0, animation: "floatBlob 22s infinite ease-in-out 1s" },
+    container: { maxWidth: 700, margin: "0 auto", padding: "40px 20px", fontFamily: "'Inter', sans-serif", position: "relative", zIndex: 1 },
 
-    header: { background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)", borderRadius: 18, padding: "22px 24px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08)", position: "relative", overflow: "hidden" },
-    headerGlow: { position: "absolute", top: -50, left: -50, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(79,172,254,0.08) 0%, transparent 70%)" },
-    btnLogout: { padding: "8px 16px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "10px", color: "#ef9a9a", fontSize: "12px", fontWeight: "600", cursor: "pointer", transition: "all 0.2s" },
-    headerContent: { display: "flex", alignItems: "center", gap: 14, zIndex: 1 },
-    headerIcon: { width: 50, height: 50, borderRadius: 14, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.1)" },
-    headerSvg: { position: "absolute", right: 10, top: 0, zIndex: 0 },
-    title: { fontSize: 21, fontWeight: 700, color: "#fff", margin: 0, letterSpacing: "-0.3px" },
-    subtitle: { fontSize: 12, color: "rgba(255,255,255,0.55)", margin: "2px 0 0" },
+    header: { background: "rgba(255, 255, 255, 0.03)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderRadius: 24, padding: "32px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid rgba(255, 255, 255, 0.08)", boxShadow: "0 20px 50px rgba(0,0,0,0.3)", position: "relative", overflow: "hidden" },
+    headerGlow: { position: "absolute", top: -50, left: -50, width: 250, height: 250, borderRadius: "50%", background: "radial-gradient(circle, rgba(0, 119, 181, 0.15) 0%, transparent 70%)" },
+    headerContent: { display: "flex", alignItems: "center", gap: 20, zIndex: 1 },
+    headerIconContainer: { width: 64, height: 64, borderRadius: 16, background: "rgba(255, 255, 255, 0.05)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255, 255, 255, 0.1)", boxShadow: "0 8px 16px rgba(0,0,0,0.2)" },
+    headerLogo: { width: 40, height: 40, filter: "drop-shadow(0 0 8px rgba(0, 119, 181, 0.4))" },
+    title: { fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px", background: "linear-gradient(to right, #fff, #94a3b8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" },
+    subtitle: { fontSize: 14, color: "#94a3b8", margin: "4px 0 0", fontWeight: 400 },
+    btnLogout: { padding: "10px 20px", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: 12, color: "#f87171", fontSize: "13px", fontWeight: "700", cursor: "pointer", transition: "all 0.3s ease", "&:hover": { background: "rgba(239, 68, 68, 0.2)" } },
 
     statusBar: { padding: "10px 40px 10px 16px", borderRadius: 10, border: "1px solid", fontSize: 13, marginBottom: 14, textAlign: "center", position: "relative", animation: "fadeIn 0.3s ease-out" },
     statusClose: { position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: 14, padding: 4, opacity: 0.7 },
@@ -540,11 +588,11 @@ const styles = {
     btnPlatformConnect: { width: "100%", padding: "10px", fontSize: 13, fontWeight: 600, color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" },
     statusDot: { width: 8, height: 8, borderRadius: "50%", flexShrink: 0 },
 
-    card: { background: "rgba(255,255,255,0.05)", backdropFilter: "blur(24px)", borderRadius: 16, padding: 22, marginBottom: 14, border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04)" },
-    cardHeader: { display: "flex", alignItems: "center", gap: 10, marginBottom: 16 },
-    cardIconCircle: { width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 },
-    cardTitle: { fontSize: 15, fontWeight: 600, color: "#dce6f0", margin: 0, flex: 1 },
-    badge: { fontSize: 10, color: "#8899a6", background: "rgba(255,255,255,0.06)", padding: "3px 10px", borderRadius: 10, fontWeight: 500, border: "1px solid rgba(255,255,255,0.06)" },
+    card: { background: "rgba(255, 255, 255, 0.03)", backdropFilter: "blur(24px)", borderRadius: 24, padding: 32, marginBottom: 20, border: "1px solid rgba(255, 255, 255, 0.08)", boxShadow: "0 10px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)" },
+    cardHeader: { display: "flex", alignItems: "center", gap: 12, marginBottom: 20 },
+    cardIconCircle: { width: 36, height: 36, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" },
+    cardTitle: { fontSize: 17, fontWeight: 700, color: "#fff", margin: 0, flex: 1, letterSpacing: "-0.3px" },
+    badge: { fontSize: 11, color: "#94a3b8", background: "rgba(255,255,255,0.06)", padding: "4px 12px", borderRadius: 12, fontWeight: 600, border: "1px solid rgba(255,255,255,0.08)" },
 
     input: { width: "100%", padding: "12px 16px", fontSize: 14, border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, outline: "none", boxSizing: "border-box", marginBottom: 14, background: "rgba(255,255,255,0.04)", color: "#e0e8f0", transition: "all 0.25s" },
     row: { display: "flex", gap: 12, marginBottom: 14 },

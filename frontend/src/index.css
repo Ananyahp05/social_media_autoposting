@@ -1,5 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .glass-card {
+        @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl;
+    }
+
+    .neon-border {
+        @apply border border-white/10 relative overflow-hidden;
+
+        &::after {
+            content: '';
+            @apply absolute inset-0 opacity-0 transition-opacity duration-500 bg-gradient-to-r from-cyber-blue/20 to-cyber-purple/20;
+        }
+
+        &:hover::after {
+            @apply opacity-100;
+        }
+    }
+}
+
 :root {
     --bg-color: #0a1628;
     --glass-bg: rgba(26, 39, 68, 0.4);
@@ -8,13 +31,18 @@
     --primary-hover: #005885;
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
+    --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
+    --secondary-glow: linear-gradient(to bottom right,
+            rgba(1, 65, 255, 0),
+            rgba(1, 65, 255, 0),
+            rgba(1, 65, 255, 0.3));
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -22,6 +50,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 #root {

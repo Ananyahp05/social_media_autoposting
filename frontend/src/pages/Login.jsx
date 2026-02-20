@@ -28,9 +28,21 @@ function Login() {
 
     return (
         <div style={styles.container}>
+            {/* Decorative background blobs for color */}
+            <div style={styles.blob1}></div>
+            <div style={styles.blob2}></div>
+
             <div style={styles.glassCard}>
-                <h1 style={styles.title}>Login</h1>
-                <p style={styles.subtitle}>Enter your credentials to access your account</p>
+                <div style={styles.logoContainer}>
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
+                        alt="LinkedIn Logo"
+                        style={styles.logo}
+                    />
+                </div>
+
+                <h1 style={styles.title}>Welcome Back</h1>
+                <p style={styles.subtitle}>Supercharge your LinkedIn with AI</p>
 
                 <form onSubmit={handleLogin} style={styles.form}>
                     <div style={styles.inputGroup}>
@@ -51,11 +63,11 @@ function Login() {
                             type="password"
                             name="password"
                             id="password"
-                            placeholder=""
+                            placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            style={{ ...styles.input, position: "relative", zIndex: 10 }}
+                            style={styles.input}
                             autoComplete="current-password"
                         />
                     </div>
@@ -63,12 +75,12 @@ function Login() {
                     {error && <p style={styles.error}>{error}</p>}
 
                     <button type="submit" disabled={loading} style={styles.button}>
-                        {loading ? "Logging in..." : "Login"}
+                        {loading ? "Logging in..." : "Login to Dashboard"}
                     </button>
                 </form>
 
                 <p style={styles.footer}>
-                    Don't have an account? <Link to="/signup" style={styles.link}>Create one</Link>
+                    New here? <Link to="/signup" style={styles.link}>Create a professional account</Link>
                 </p>
             </div>
         </div>
@@ -81,94 +93,139 @@ const styles = {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#0a1628",
+        background: "linear-gradient(135deg, #0a1628 0%, #1e293b 100%)",
         padding: "20px",
+        position: "relative",
+        overflow: "hidden",
+    },
+    blob1: {
+        position: "absolute",
+        top: "-10%",
+        right: "-10%",
+        width: "400px",
+        height: "400px",
+        background: "radial-gradient(circle, rgba(0, 119, 181, 0.4) 0%, transparent 70%)",
+        filter: "blur(60px)",
+        zIndex: 0,
+    },
+    blob2: {
+        position: "absolute",
+        bottom: "-10%",
+        left: "-10%",
+        width: "400px",
+        height: "400px",
+        background: "radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%)",
+        filter: "blur(60px)",
+        zIndex: 0,
     },
     glassCard: {
-        background: "rgba(26, 39, 68, 0.4)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderRadius: "24px",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        padding: "40px",
+        background: "rgba(255, 255, 255, 0.03)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: "32px",
+        border: "1px solid rgba(255, 255, 255, 0.08)",
+        padding: "48px",
         width: "100%",
-        maxWidth: "440px",
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-        animation: "fadeInUp 0.6s ease-out",
+        maxWidth: "460px",
+        boxShadow: "0 40px 100px -20px rgba(0, 0, 0, 0.5)",
+        zIndex: 10,
+        animation: "fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
+    },
+    logoContainer: {
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "24px",
+    },
+    logo: {
+        width: "48px",
+        height: "48px",
+        filter: "drop-shadow(0 0 10px rgba(0, 119, 181, 0.5))",
     },
     title: {
         color: "#fff",
-        fontSize: "32px",
-        fontWeight: "700",
-        marginBottom: "8px",
+        fontSize: "36px",
+        fontWeight: "800",
+        marginBottom: "12px",
         textAlign: "center",
-        letterSpacing: "-0.5px",
+        letterSpacing: "-1px",
+        background: "linear-gradient(to right, #fff, #94a3b8)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
     },
     subtitle: {
         color: "#94a3b8",
-        fontSize: "16px",
-        marginBottom: "32px",
+        fontSize: "17px",
+        marginBottom: "40px",
         textAlign: "center",
+        fontWeight: "400",
     },
     form: {
         display: "flex",
         flexDirection: "column",
-        gap: "20px",
+        gap: "24px",
     },
     inputGroup: {
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
+        gap: "10px",
     },
     label: {
-        color: "#e2e8f0",
+        color: "#cbd5e1",
         fontSize: "14px",
-        fontWeight: "500",
+        fontWeight: "600",
         marginLeft: "4px",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
     },
     input: {
         width: "100%",
         boxSizing: "border-box",
-        padding: "14px 16px",
-        borderRadius: "12px",
-        background: "rgba(10, 22, 40, 0.6)",
+        padding: "16px 20px",
+        borderRadius: "16px",
+        background: "rgba(255, 255, 255, 0.03)",
         border: "1px solid rgba(255, 255, 255, 0.1)",
         color: "#fff",
         fontSize: "16px",
         outline: "none",
-        transition: "all 0.2s ease",
+        transition: "all 0.3s ease",
+        "&:focus": {
+            border: "1px solid #0077b5",
+            background: "rgba(255, 255, 255, 0.05)",
+        }
     },
     button: {
-        padding: "14px",
-        borderRadius: "12px",
-        background: "linear-gradient(135deg, #0077b5 0%, #005885 100%)",
+        padding: "16px",
+        borderRadius: "16px",
+        background: "linear-gradient(135deg, #0077b5 0%, #00a0dc 100%)",
         color: "#fff",
         border: "none",
-        fontSize: "16px",
-        fontWeight: "600",
+        fontSize: "17px",
+        fontWeight: "700",
         cursor: "pointer",
-        marginTop: "10px",
-        boxShadow: "0 4px 15px rgba(0, 119, 181, 0.3)",
+        marginTop: "12px",
+        boxShadow: "0 10px 25px -5px rgba(0, 119, 181, 0.4)",
+        transition: "all 0.3s ease",
     },
     error: {
-        color: "#ef4444",
+        color: "#f87171",
         fontSize: "14px",
         textAlign: "center",
-        background: "rgba(239, 68, 68, 0.1)",
-        padding: "10px",
-        borderRadius: "8px",
-        border: "1px solid rgba(239, 68, 68, 0.2)",
+        background: "rgba(248, 113, 113, 0.1)",
+        padding: "12px",
+        borderRadius: "12px",
+        border: "1px solid rgba(248, 113, 113, 0.2)",
     },
     footer: {
-        color: "#94a3b8",
-        fontSize: "14px",
-        marginTop: "24px",
+        color: "#64748b",
+        fontSize: "15px",
+        marginTop: "32px",
         textAlign: "center",
     },
     link: {
-        color: "#0077b5",
+        color: "#00a0dc",
         textDecoration: "none",
-        fontWeight: "600",
+        fontWeight: "700",
+        transition: "color 0.2s ease",
     },
 };
 
