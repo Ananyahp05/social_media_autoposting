@@ -6,7 +6,8 @@ load_dotenv()
 # LinkedIn
 CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET", "")
-REDIRECT_URI = os.getenv("REDIRECT_URI", "http://localhost:8000/linkedin/callback")
+REDIRECT_URI = os.getenv("REDIRECT_URI", "")
+TWITTER_CALLBACK_URL = os.getenv("TWITTER_CALLBACK_URL", "")
 
 # Gemini AI
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
