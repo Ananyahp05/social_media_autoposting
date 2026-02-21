@@ -24,6 +24,7 @@ class InstagramUser(Base):
     __tablename__ = "instagram_users"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_email = Column(String, index=True)  # Associated app user
     instagram_user_id = Column(String, unique=True, index=True)
     access_token = Column(String)
     username = Column(String)

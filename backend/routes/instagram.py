@@ -7,22 +7,25 @@ import requests
 import os
 
 from db import get_db
-from models import InstagramUser
+from models import InstagramUser, User
 from config import INSTAGRAM_APP_ID, INSTAGRAM_APP_SECRET, INSTAGRAM_REDIRECT_URI, FRONTEND_URL
+from routes.auth import get_current_user
 
 router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
 
 # 🔹 Step 1: Login — redirects user to Facebook OAuth for Instagram permissions
 @router.get("/login")
-def login():
+def login(current_user: User = Depends(get_current_user)):
     scopes = "instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement"
+    state = current_user.email
     encoded_redirect = quote(INSTAGRAM_REDIRECT_URI, safe="")
     url = (
         "https://www.facebook.com/v21.0/dialog/oauth"
         f"?client_id={INSTAGRAM_APP_ID}"
         f"&redirect_uri={encoded_redirect}"
         f"&scope={scopes}"
+        f"&state={state}"
         "&response_type=code"
     )
     print(f"[DEBUG] Instagram OAuth URL: {url}")
@@ -31,7 +34,7 @@ def login():
 
 # 🔹 Step 2: Callback — Facebook redirects here after user approves
 @router.get("/callback")
-def callback(code: str, db: Session = Depends(get_db)):
+def callback(code: str, state: str, db: Session = Depends(get_db)):
     try:
         print(f"[DEBUG] Instagram callback received with code: {code[:10]}...")
 
@@ -108,14 +111,16 @@ def callback(code: str, db: Session = Depends(get_db)):
 
         # Save or update user in DB (store page access token, as it has IG permissions)
         existing_user = db.query(InstagramUser).filter(
-            InstagramUser.instagram_user_id == ig_user_id
+            InstagramUser.user_email == state
         ).first()
 
         if existing_user:
             existing_user.access_token = page_access_token
             existing_user.username = ig_username
+            existing_user.instagram_user_id = ig_user_id
         else:
             user = InstagramUser(
+                user_email=state,
                 instagram_user_id=ig_user_id,
                 access_token=page_access_token,
                 username=ig_username,
@@ -132,8 +137,8 @@ def callback(code: str, db: Session = Depends(get_db)):
 
 # 🔹 Check if an Instagram account is connected
 @router.get("/status")
-def status(db: Session = Depends(get_db)):
-    user = db.query(InstagramUser).first()
+def status(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = db.query(InstagramUser).filter(InstagramUser.user_email == current_user.email).first()
     if user:
         return {"connected": True, "username": user.username}
     return {"connected": False}
@@ -141,8 +146,8 @@ def status(db: Session = Depends(get_db)):
 
 # 🔹 Disconnect Instagram account
 @router.delete("/disconnect")
-def disconnect(db: Session = Depends(get_db)):
-    user = db.query(InstagramUser).first()
+def disconnect(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = db.query(InstagramUser).filter(InstagramUser.user_email == current_user.email).first()
     if not user:
         raise HTTPException(status_code=404, detail="No Instagram account connected.")
     db.delete(user)
@@ -156,8 +161,9 @@ async def post(
     text: str = Form(...),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    user = db.query(InstagramUser).first()
+    user = db.query(InstagramUser).filter(InstagramUser.user_email == current_user.email).first()
     if not user:
         raise HTTPException(
             status_code=404,
