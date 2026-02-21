@@ -20,6 +20,15 @@ class TwitterUser(Base):
     screen_name = Column(String)
 
 
+class InstagramUser(Base):
+    __tablename__ = "instagram_users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    instagram_user_id = Column(String, unique=True, index=True)
+    access_token = Column(String)
+    username = Column(String)
+
+
 class User(Base):
     __tablename__ = "users"
 

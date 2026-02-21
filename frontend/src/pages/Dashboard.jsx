@@ -288,6 +288,11 @@ const TwitterIcon = ({ size = 24, color = "#fff" }) => (
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
 );
+const InstagramIcon = ({ size = 24, color = "#fff" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={color}>
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+    </svg>
+);
 
 /* ─── Status Color Map ────────────────────────────────────────── */
 const statusThemes = {
@@ -309,6 +314,8 @@ function Dashboard() {
     const [linkedinConnected, setLinkedinConnected] = useState(false);
     const [twitterConnected, setTwitterConnected] = useState(false);
     const [twitterScreenName, setTwitterScreenName] = useState("");
+    const [instagramConnected, setInstagramConnected] = useState(false);
+    const [instagramUsername, setInstagramUsername] = useState("");
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
     const [imagePrompt, setImagePrompt] = useState("");
@@ -317,7 +324,7 @@ function Dashboard() {
     const [imagePreview, setImagePreview] = useState(null);
     const [posting, setPosting] = useState(false);
     const [charCount, setCharCount] = useState(0);
-    const [postTo, setPostTo] = useState({ linkedin: true, twitter: false });
+    const [postTo, setPostTo] = useState({ linkedin: true, twitter: false, instagram: false });
     const fileInputRef = useRef(null);
 
     /* ─── Parallax Mouse ─────────────────────────────────── */
@@ -336,6 +343,7 @@ function Dashboard() {
     const tiltHeader = useTilt(4);
     const tiltLI = useTilt(10);
     const tiltTW = useTilt(10);
+    const tiltIG = useTilt(10);
     const tiltContent = useTilt(4);
     const tiltImage = useTilt(4);
     const tiltEditor = useTilt(4);
@@ -349,8 +357,11 @@ function Dashboard() {
         const params = new URLSearchParams(window.location.search);
         if (params.get("linkedin") === "success") { showStatus("✅ LinkedIn connected!", "success"); window.history.replaceState({}, "", "/dashboard"); }
         else if (params.get("linkedin") === "error") { showStatus("❌ LinkedIn: " + (params.get("message") || "Failed"), "error"); window.history.replaceState({}, "", "/dashboard"); }
+        if (params.get("instagram") === "success") { showStatus("✅ Instagram connected!", "success"); window.history.replaceState({}, "", "/dashboard"); }
+        else if (params.get("instagram") === "error") { showStatus("❌ Instagram: " + (params.get("message") || "Failed"), "error"); window.history.replaceState({}, "", "/dashboard"); }
         axios.get(`${API}/linkedin/status`, { headers }).then(res => setLinkedinConnected(res.data.connected)).catch(() => { });
         axios.get(`${API}/twitter/status`, { headers }).then(res => { setTwitterConnected(res.data.connected); if (res.data.screen_name) setTwitterScreenName(res.data.screen_name); }).catch(() => { });
+        axios.get(`${API}/instagram/status`, { headers }).then(res => { setInstagramConnected(res.data.connected); if (res.data.username) setInstagramUsername(res.data.username); }).catch(() => { });
     }, [navigate]);
 
     useEffect(() => { setCharCount(generatedText.length); }, [generatedText]);
@@ -370,6 +381,8 @@ function Dashboard() {
     const disconnectLinkedIn = async () => { if (!window.confirm("Disconnect LinkedIn?")) return; try { await axios.delete(`${API}/linkedin/disconnect`); setLinkedinConnected(false); showStatus("🔓 LinkedIn disconnected", "info"); } catch (err) { showStatus("❌ " + (err.response?.data?.detail || err.message), "error"); } };
     const loginTwitter = async () => { try { const res = await axios.get(`${API}/twitter/login`); window.location.href = res.data.auth_url; } catch (err) { showStatus("❌ " + (err.response?.data?.detail || err.message), "error"); } };
     const disconnectTwitter = async () => { if (!window.confirm("Disconnect Twitter/X?")) return; try { await axios.delete(`${API}/twitter/disconnect`); setTwitterConnected(false); setTwitterScreenName(""); showStatus("🔓 Twitter disconnected", "info"); } catch (err) { showStatus("❌ " + (err.response?.data?.detail || err.message), "error"); } };
+    const loginInstagram = async () => { try { const res = await axios.get(`${API}/instagram/login`); window.location.href = res.data.auth_url; } catch (err) { showStatus("❌ " + (err.response?.data?.detail || err.message), "error"); } };
+    const disconnectInstagram = async () => { if (!window.confirm("Disconnect Instagram?")) return; try { await axios.delete(`${API}/instagram/disconnect`); setInstagramConnected(false); setInstagramUsername(""); showStatus("🔓 Instagram disconnected", "info"); } catch (err) { showStatus("❌ " + (err.response?.data?.detail || err.message), "error"); } };
     const handleImageSelect = (e) => { const file = e.target.files[0]; if (!file) return; if (!file.type.startsWith("image/")) { showStatus("⚠️ Select a valid image", "error"); return; } if (file.size > 10 * 1024 * 1024) { showStatus("⚠️ Max 10MB", "error"); return; } setSelectedImage(file); setImagePreview(URL.createObjectURL(file)); showStatus("🖼️ Image attached!", "success"); };
     const removeImage = () => { setSelectedImage(null); if (imagePreview) URL.revokeObjectURL(imagePreview); setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; };
     const handleGenerateImage = async () => {
@@ -386,7 +399,7 @@ function Dashboard() {
     };
     const postContent = async () => {
         if (!generatedText.trim()) { showStatus("⚠️ Write or generate content first!", "error"); return; }
-        const targets = []; if (postTo.linkedin && linkedinConnected) targets.push("linkedin"); if (postTo.twitter && twitterConnected) targets.push("twitter");
+        const targets = []; if (postTo.linkedin && linkedinConnected) targets.push("linkedin"); if (postTo.twitter && twitterConnected) targets.push("twitter"); if (postTo.instagram && instagramConnected) targets.push("instagram");
         if (targets.length === 0) { showStatus("⚠️ Select at least one connected platform!", "error"); return; }
         setPosting(true); const results = [];
         for (const platform of targets) { try { const formData = new FormData(); formData.append("text", generatedText); if (selectedImage) formData.append("image", selectedImage); const res = await axios.post(`${API}/${platform}/post`, formData, { headers: { "Content-Type": "multipart/form-data" } }); results.push(`✅ ${platform}: ${res.data.message}`); } catch (err) { results.push(`❌ ${platform}: ${err.response?.data?.detail || err.message}`); } }
@@ -394,7 +407,7 @@ function Dashboard() {
     };
     const copyToClipboard = () => { navigator.clipboard.writeText(generatedText); showStatus("📋 Copied!", "info"); };
 
-    const anyConnected = linkedinConnected || twitterConnected;
+    const anyConnected = linkedinConnected || twitterConnected || instagramConnected;
 
     /* ═══════════════════════════════════════════════════════════
        RENDER
@@ -586,6 +599,38 @@ function Dashboard() {
                                 onClick={loginTwitter} style={{ ...S.btnConnect, background: "linear-gradient(135deg, #1d9bf0, #0c7abf)" }}>Connect</motion.button>
                         )}
                     </motion.div>
+
+                    {/* Instagram */}
+                    <motion.div whileHover={{ y: -6 }}
+                        ref={tiltIG.ref} onMouseMove={tiltIG.onMouseMove} onMouseLeave={tiltIG.onMouseLeave}
+                        style={{
+                            ...S.glassCard, flex: 1, borderRadius: 18, padding: "18px 20px",
+                            borderColor: instagramConnected ? "rgba(225,48,108,0.3)" : "rgba(255,255,255,0.06)",
+                            boxShadow: instagramConnected ? "0 10px 40px rgba(225,48,108,0.12), inset 0 1px 0 rgba(255,255,255,0.08)" : S.glassCard.boxShadow,
+                        }}
+                    >
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #E1306C, #F77737)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(225,48,108,0.3)" }}>
+                                <InstagramIcon size={15} color="#fff" />
+                            </div>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#e2e8f0", flex: 1 }}>Instagram</span>
+                            <div style={{
+                                width: 10, height: 10, borderRadius: "50%",
+                                background: instagramConnected ? "#00ff88" : "#334155",
+                                boxShadow: instagramConnected ? "0 0 12px rgba(0,255,136,0.6)" : "none",
+                            }} />
+                        </div>
+                        {instagramConnected ? (
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                <span style={{ fontSize: 12, color: "#00ff88", fontWeight: 600 }}>✓ @{instagramUsername}</span>
+                                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                                    onClick={disconnectInstagram} style={S.btnDisconnect}>Disconnect</motion.button>
+                            </div>
+                        ) : (
+                            <motion.button whileHover={{ scale: 1.03, boxShadow: "0 8px 24px rgba(225,48,108,0.3)" }} whileTap={{ scale: 0.97 }}
+                                onClick={loginInstagram} style={{ ...S.btnConnect, background: "linear-gradient(135deg, #E1306C, #F77737)" }}>Connect</motion.button>
+                        )}
+                    </motion.div>
                 </motion.div>
 
                 {/* ════ CONTENT GENERATION CARD ═══════════════ */}
@@ -769,6 +814,20 @@ function Dashboard() {
                                 <TwitterIcon size={14} color={postTo.twitter ? "#1d9bf0" : "#4a5568"} />
                                 <span>Twitter/X</span>
                             </motion.button>
+                            <motion.button whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                                onClick={() => setPostTo(p => ({ ...p, instagram: !p.instagram }))} disabled={!instagramConnected}
+                                style={{
+                                    display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", fontSize: 12, fontWeight: 600,
+                                    borderRadius: 12, cursor: instagramConnected ? "pointer" : "default",
+                                    background: postTo.instagram ? "rgba(225,48,108,0.1)" : "rgba(255,255,255,0.03)",
+                                    border: `1px solid ${postTo.instagram ? "rgba(225,48,108,0.3)" : "rgba(255,255,255,0.08)"}`,
+                                    color: postTo.instagram ? "#E1306C" : "#4a5568",
+                                    boxShadow: postTo.instagram ? "0 0 12px rgba(225,48,108,0.1)" : "none",
+                                    opacity: instagramConnected ? 1 : 0.4,
+                                }}>
+                                <InstagramIcon size={14} color={postTo.instagram ? "#E1306C" : "#4a5568"} />
+                                <span>Instagram</span>
+                            </motion.button>
                         </div>
                         <div style={{ display: "flex", gap: 10 }}>
                             <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
@@ -780,7 +839,7 @@ function Dashboard() {
                             >
                                 {posting
                                     ? <span style={S.loadingFlex}><span style={S.spinner} />Posting...</span>
-                                    : `📤 Post ${[postTo.linkedin && "LinkedIn", postTo.twitter && "Twitter"].filter(Boolean).join(" & ") || ""}`}
+                                    : `📤 Post ${[postTo.linkedin && "LinkedIn", postTo.twitter && "Twitter", postTo.instagram && "Instagram"].filter(Boolean).join(" & ") || ""}`}
                             </motion.button>
                         </div>
                     </div>
@@ -793,6 +852,8 @@ function Dashboard() {
                     <LinkedInIcon size={12} color="#334155" />
                     <span>+</span>
                     <TwitterIcon size={12} color="#334155" />
+                    <span>+</span>
+                    <InstagramIcon size={12} color="#334155" />
                     <span style={{ marginLeft: 4 }}>Social Media Poster — Powered by AI</span>
                 </motion.div>
             </motion.div>
